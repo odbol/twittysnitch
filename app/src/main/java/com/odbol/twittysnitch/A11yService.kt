@@ -124,8 +124,17 @@ class A11yService : AccessibilityService() {
 
     private fun isTweet(path: List<String>, id: String?, source: AccessibilityNodeInfo): Boolean {
         return (id == "row" &&
+                // match home tab only:
                 path.containsAll(listOf("nested_coordinator_layout", "list")) &&
-                source.contentDescription?.lastIndexOf("retweets") != -1)
+
+                // match any tab:
+                // path.containsAll(listOf("root_coordinator_layout", "pager")) &&
+
+                source.contentDescription?.indexOf("@") != -1
+                )
+        // can't check for "retweet" or "like" because those don't show up if no one likes it
+//                &&
+//                source.contentDescription?.lastIndexOf("retweet") != -1)
     }
 
     override fun onInterrupt() {}
