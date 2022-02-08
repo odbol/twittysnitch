@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import java.util.ArrayList
 
 class A11yService : AccessibilityService() {
 
@@ -47,10 +46,17 @@ class A11yService : AccessibilityService() {
             AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED -> {
                 eventText = " Text Changed "
             }
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
+                eventText = " Window Changed "
+            }
         }
-        eventText = eventText + " CD: " + event.contentDescription + " "
+        eventText = eventType.toString() + eventText + " CD: " + event.contentDescription + " "
         val source = event.source ?: return
+        val parent = source.parent
+        Log.d(TAG, "New source $eventText : event.recordCount: ${event.recordCount} " + event)
         printAllText(source, shouldToast)
+        parent.recycle()
+        source.recycle()
     }
 
     private fun isActivityToBeTracked(activityInfo: ComponentName): Boolean {
@@ -65,25 +71,24 @@ class A11yService : AccessibilityService() {
         }
     }
 
-    private fun printAllText(source: AccessibilityNodeInfo?, shouldToast: Boolean) {
+    private fun printAllText(source: AccessibilityNodeInfo?, shouldToast: Boolean, level: Int = 0) {
         if (source == null) {
             return
         }
-//        if ("android.widget.TextView" == source.className || ("android.widget.EditText"
-//                    == source.className)
-//        ) {
+//        if (!source.text.isNullOrBlank()) {
             var id = source.viewIdResourceName
             if (id != null) {
                 id = id.split("/").toTypedArray()[1]
             }
-            val eventData = "id: " + id + ", text:" + source.text
-            Log.d(LOG_TAG, eventData)
+            val eventData = "id: " + id + ", text:" + source.text + " cd: ${source.contentDescription}"
+            val levelIndent = " ".repeat(level)
+            Log.d(TAG, levelIndent + eventData)
 //            BusProvider.UI_BUS.post(TextChangeEvent(eventData, shouldToast))
 //        }
         for (i in 0 until source.childCount) {
             val child = source.getChild(i)
             if (child != null) {
-                printAllText(child, shouldToast)
+                printAllText(child, shouldToast, level + 1)
                 child.recycle()
             }
         }
@@ -92,6 +97,6 @@ class A11yService : AccessibilityService() {
     override fun onInterrupt() {}
 
     companion object {
-        private const val LOG_TAG = "A11yService"
+        private const val TAG = "A11yService"
     }
 }
