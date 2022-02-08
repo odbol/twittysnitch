@@ -30,11 +30,11 @@ import android.hardware.display.DisplayManager
 class Highlighter(private val context: Context) {
 
     private val highlights: MutableList<Rect> = mutableListOf()
-    private val view: View
+    private var view: View? = null
 
-    init {
+    fun onConnected() {
         val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or FLAG_NOT_TOUCHABLE,
             PixelFormat.TRANSLUCENT
         )
@@ -59,12 +59,12 @@ class Highlighter(private val context: Context) {
 
     fun addHighlight(highlightRect: Rect) {
         highlights.add(Rect(highlightRect))
-        view.postInvalidate()
+        view?.postInvalidate()
     }
 
     fun clearHighlights() {
         highlights.clear()
-        view.postInvalidate()
+        view?.postInvalidate()
     }
 
     inner class HighlighterView(context: Context) : View(context) {

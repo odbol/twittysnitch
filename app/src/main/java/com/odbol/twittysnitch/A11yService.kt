@@ -28,7 +28,7 @@ class A11yService : AccessibilityService() {
         this.serviceInfo = info
 
 //        setAccessibilityFocusAppearance(2, Color.GREEN)
-//        highlighter.onConnected()
+        highlighter.onConnected()
     }
 
     override fun onCreate() {
@@ -100,7 +100,7 @@ class A11yService : AccessibilityService() {
             val levelIndent = " ".repeat(path.size)
             Log.d(TAG, levelIndent + eventData)
 
-            if (isTweet(path, source)) {
+            if (isTweet(path, id, source)) {
                 highlight(source);
             }
 //            BusProvider.UI_BUS.post(TextChangeEvent(eventData, shouldToast))
@@ -119,11 +119,12 @@ class A11yService : AccessibilityService() {
         source.getBoundsInScreen(highlightRect)
         Log.d(TAG, "highlight $highlightRect")
         source.performAction(ACTION_ACCESSIBILITY_FOCUS)
-//        highlighter.addHighlight(highlightRect)
+        highlighter.addHighlight(highlightRect)
     }
 
-    private fun isTweet(path: List<String>, source: AccessibilityNodeInfo): Boolean {
-        return (path.containsAll(listOf("nested_coordinator_layout", "list", "row")) &&
+    private fun isTweet(path: List<String>, id: String?, source: AccessibilityNodeInfo): Boolean {
+        return (id == "row" &&
+                path.containsAll(listOf("nested_coordinator_layout", "list")) &&
                 source.contentDescription?.lastIndexOf("retweets") != -1)
     }
 
