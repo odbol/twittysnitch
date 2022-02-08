@@ -10,6 +10,10 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
 import com.odbol.twittysnitch.databinding.ActivityMainBinding
+import android.content.Intent
+import android.provider.Settings
+import android.util.Log
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +35,34 @@ class MainActivity : AppCompatActivity() {
         binding.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
+        }
+
+        if (!checkAccessibilityPermission()) {
+            // if not construct intent to request permission
+            val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            // request permission via start activity for result
+            startActivity(intent)
+        }
+    }
+
+    private fun checkAccessibilityPermission(): Boolean {
+        var accessEnabled = 0
+        try {
+            accessEnabled =
+                Settings.Secure.getInt(this.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED)
+        } catch (e: Settings.SettingNotFoundException) {
+            Log.e(TAG, "Failed to check a11y setting", e)
+        }
+        return if (accessEnabled == 0) {
+            false
+        } else {
+            val enabledServices = Settings.Secure.getString(
+                contentResolver,
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+            )
+
+            enabledServices.contains(packageName, ignoreCase = true)
         }
     }
 
@@ -54,5 +86,9 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
     }
 }
