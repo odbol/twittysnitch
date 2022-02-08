@@ -5,6 +5,8 @@ import android.content.Context.MODE_PRIVATE
 import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.Toast
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.File
@@ -16,7 +18,7 @@ class TweetRepo(private val context: Context) {
     private val dbDir = context.getDir("tweets", MODE_PRIVATE)
     private val tweetCache = mutableSetOf<String>()
 
-    private var lastFlushMs: Long = 0
+    private var lastFlushMs: Long = System.currentTimeMillis()
 
     fun save(tweet: CharSequence) {
         tweetCache.add(tweet.toString())
@@ -26,11 +28,21 @@ class TweetRepo(private val context: Context) {
         }
     }
 
+    fun list() = dbDir.listFiles()?.toList()?.sortedDescending() ?: listOf()
+
+    fun load(dbFile: File): Observable<String> {
+        return Observable.using(
+            { dbFile.inputStream().bufferedReader() },
+            { Observable.fromStream(it.lines()) },
+            { it.close() }
+        )
+    }
+
     private fun flushCache() {
         val currentTimeMillis = System.currentTimeMillis()
         if (tweetCache.size > 0) {
             Single.just(tweetCache.toSet())
-                .observeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .map { tweets ->
                     val dbFile = File(dbDir, "tweets-$currentTimeMillis")
@@ -45,6 +57,7 @@ class TweetRepo(private val context: Context) {
                 .subscribe(
                     // onSuccess
                     {
+                        Log.i(TAG, "Saved ${it.size} tweets to db")
                         Toast.makeText(context, "Saved ${it.size} tweets to db", Toast.LENGTH_SHORT)
                             .show()
                     },
@@ -66,7 +79,7 @@ class TweetRepo(private val context: Context) {
 
     companion object {
         private const val TAG = "TweetRepo"
-        private const val MAX_SIZE = 300
+        private const val MAX_SIZE = 30
         private val MAX_TIME_MS = TimeUnit.MINUTES.toMillis(20)
     }
 }

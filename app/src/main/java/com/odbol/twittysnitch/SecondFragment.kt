@@ -35,6 +35,29 @@ class SecondFragment : Fragment() {
         binding.buttonSecond.setOnClickListener {
             findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
         }
+
+        binding.tweetText.text = ""
+        val tweetRepo = TweetRepo(requireContext())
+        val dbFiles = tweetRepo.list()
+        binding.tweetText.apply{
+            append("${dbFiles.size} files total\n\n")
+        }
+        if (dbFiles.isNotEmpty()) {
+            tweetRepo.load(dbFiles.first())
+                .subscribe(
+                    // onNext
+                    {
+                        binding.tweetText.apply{
+                            append(it)
+                            append("\n")
+                        }
+                    },
+                    // onError
+                    {
+                        binding.tweetText.text = "Error: $it"
+                    }
+                )
+        }
     }
 
     override fun onDestroyView() {
