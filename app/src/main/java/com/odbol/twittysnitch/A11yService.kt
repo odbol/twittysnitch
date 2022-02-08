@@ -140,7 +140,14 @@ class A11yService : AccessibilityService() {
 //                source.contentDescription?.lastIndexOf("retweet") != -1)
     }
 
-    override fun onInterrupt() {}
+    override fun onDestroy() {
+        db.flushCache()
+        super.onDestroy()
+    }
+
+    override fun onInterrupt() {
+        db.flushCache()
+    }
 
     companion object {
         private const val TAG = "A11yService"

@@ -38,7 +38,7 @@ class TweetRepo(private val context: Context) {
         )
     }
 
-    private fun flushCache() {
+    fun flushCache() {
         val currentTimeMillis = System.currentTimeMillis()
         if (tweetCache.size > 0) {
             Single.just(tweetCache.toSet())
