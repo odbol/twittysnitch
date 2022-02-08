@@ -15,6 +15,7 @@ import android.view.accessibility.AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILI
 
 class A11yService : AccessibilityService() {
 
+    private lateinit var db: TweetRepo
     private lateinit var highlighter: Highlighter
     private var packages = listOf("com.twitter.android")
 
@@ -34,6 +35,7 @@ class A11yService : AccessibilityService() {
     override fun onCreate() {
         super.onCreate()
         highlighter = Highlighter(this)
+        db = TweetRepo(this)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
@@ -102,6 +104,7 @@ class A11yService : AccessibilityService() {
 
             if (isTweet(path, id, source)) {
                 highlight(source);
+                db.save(source.contentDescription)
             }
 //            BusProvider.UI_BUS.post(TextChangeEvent(eventData, shouldToast))
 //        }
