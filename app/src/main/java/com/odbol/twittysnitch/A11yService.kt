@@ -40,6 +40,9 @@ class A11yService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
         var shouldToast = true
+
+        highlighter.clearHighlights()
+
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
             val componentName = ComponentName(
                 event.packageName.toString(),
@@ -71,7 +74,6 @@ class A11yService : AccessibilityService() {
 //        source.performAction(ACTION_CLEAR_ACCESSIBILITY_FOCUS)
 //        val parent = source.parent
         Log.d(TAG, "New source $eventText : event.recordCount: ${event.recordCount} " + event)
-        highlighter.clearHighlights()
         printAllText(source, shouldToast)
 //        parent?.recycle()
         source.recycle()

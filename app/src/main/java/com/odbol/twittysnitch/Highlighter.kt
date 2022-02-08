@@ -59,12 +59,12 @@ class Highlighter(private val context: Context) {
 
     fun addHighlight(highlightRect: Rect) {
         highlights.add(Rect(highlightRect))
-        view?.postInvalidate()
+        view?.invalidate()
     }
 
     fun clearHighlights() {
         highlights.clear()
-        view?.postInvalidate()
+        view?.invalidate()
     }
 
     inner class HighlighterView(context: Context) : View(context) {
