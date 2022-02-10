@@ -35,6 +35,17 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/serviceconfig"/>
         </service>
+
+        <!-- File export -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="@string/file_provider_authority"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 
 </manifest>
