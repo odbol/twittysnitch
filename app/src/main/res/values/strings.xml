@@ -19,4 +19,5 @@
     <string name="feedback_email_subject">Twittysnitch</string>
     <string name="file_provider_authority" translatable="false">com.odbol.twittysnitch.fileprovider</string>
     <string name="share_subject">Twitty snitch data</string>
+    <string name="exporting">Exporting...</string>
 </resources>
