@@ -79,7 +79,7 @@ class TweetRepo(private val context: Context) {
 
     companion object {
         private const val TAG = "TweetRepo"
-        private const val MAX_SIZE = 300
-        private val MAX_TIME_MS = TimeUnit.MINUTES.toMillis(20)
+        private const val MAX_SIZE = 30
+        private val MAX_TIME_MS = TimeUnit.MINUTES.toMillis(5)
     }
 }
