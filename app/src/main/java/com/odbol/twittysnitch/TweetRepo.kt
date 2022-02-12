@@ -48,7 +48,7 @@ class TweetRepo(private val context: Context) {
                     val dbFile = File(dbDir, "tweets-$currentTimeMillis")
                     dbFile.outputStream().bufferedWriter().use { writer ->
                         tweets.forEach {
-                            writer.write(it)
+                            writer.write(it?.replace("\n", "\\n"))
                             writer.newLine()
                         }
                     }
